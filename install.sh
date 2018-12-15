@@ -69,8 +69,8 @@ tar zxf ./pcre-8.42.tar.gz
 cd /usr/src/
 git clone https://github.com/hakasenyang/openssl-patch.git
 cd /usr/src/openssl 
-patch -p1 < ../openssl-patch/openssl-equal-1.1.1_ciphers.patch
-patch -p1 < ../openssl-patch/openssl-1.1.1-chacha_draft.patch
+patch -p1 < ../openssl-patch/openssl-equal-1.1.1a_ciphers.patch
+patch -p1 < ../openssl-patch/openssl-1.1.1a-chacha_draft.patch
 
 # 下载 nginx-patch
 # 给 nginx 打补丁，修复一些问题
