@@ -42,9 +42,9 @@ mv openssl-OpenSSL_1_1_1 openssl
 
 # 下载 nginx
 cd /usr/src/
-wget https://nginx.org/download/nginx-1.15.6.tar.gz
-tar zxf ./nginx-1.15.6.tar.gz 
-mv nginx-1.15.6 nginx
+wget https://nginx.org/download/nginx-1.15.9.tar.gz
+tar zxvf ./nginx-1.15.9.tar.gz 
+mv nginx-1.15.9 nginx
 
 # 下载 zlib
 # 开启 gzip 压缩
@@ -61,8 +61,8 @@ git clone --recursive https://github.com/google/ngx_brotli.git
 # 下载 pcre
 # 用于正则
 cd /usr/src/
-wget https://ftp.pcre.org/pub/pcre/pcre-8.42.tar.gz
-tar zxf ./pcre-8.42.tar.gz
+wget https://ftp.pcre.org/pub/pcre/pcre-8.43.tar.gz
+tar zxf ./pcre-8.43.tar.gz
 
 # 下载 openssl-patch
 # 给 openssl 打补丁，用于开启更多 https 支持
@@ -70,7 +70,6 @@ cd /usr/src/
 git clone https://github.com/hakasenyang/openssl-patch.git
 cd /usr/src/openssl 
 patch -p1 < ../openssl-patch/openssl-equal-1.1.1a_ciphers.patch
-patch -p1 < ../openssl-patch/openssl-1.1.1a-chacha_draft.patch
 
 # 下载 nginx-patch
 # 给 nginx 打补丁，修复一些问题
@@ -78,7 +77,6 @@ cd /usr/src/
 git clone https://github.com/kn007/patch.git nginx-patch
 cd /usr/src/nginx
 patch -p1 < ../nginx-patch/nginx.patch 
-patch -p1 < ../nginx-patch/nginx_auto_using_PRIORITIZE_CHACHA.patch
 
 # 下载安装 jemalloc
 # 更好的内存管理
@@ -95,21 +93,21 @@ if [[ $waf == 1 ]]; then
 
 # 下载 ngx_lua_waf 防火墙的各种依赖及模块
 cd /usr/src/
-wget https://github.com/openresty/luajit2/archive/v2.1-20181029.tar.gz
-tar xzvf v2.1-20181029.tar.gz
-mv luajit2-2.1-20181029 luajit-2.1
+wget https://github.com/openresty/luajit2/archive/v2.1-20190302.tar.gz
+tar xzvf v2.1-20190302.tar.gz
+mv luajit2-2.1-20190302 luajit-2.1
 
-wget https://github.com/openresty/lua-cjson/archive/2.1.0.6.tar.gz
-tar xzvf 2.1.0.6.tar.gz
-mv lua-cjson-2.1.0.6 lua-cjson
+wget https://github.com/openresty/lua-cjson/archive/2.1.0.7.tar.gz
+tar xzvf 2.1.0.7.tar.gz
+mv lua-cjson-2.1.0.7 lua-cjson
 
 wget https://github.com/simplresty/ngx_devel_kit/archive/v0.3.1rc1.tar.gz
 tar xzvf v0.3.1rc1.tar.gz
 mv ngx_devel_kit-0.3.1rc1 ngx_devel_kit
 
-wget https://github.com/openresty/lua-nginx-module/archive/v0.10.13.tar.gz
-tar xzvf v0.10.13.tar.gz  
-mv lua-nginx-module-0.10.13 lua-nginx-module
+wget https://github.com/openresty/lua-nginx-module/archive/v0.10.14.tar.gz
+tar xzvf v0.10.14.tar.gz  
+mv lua-nginx-module-0.10.14 lua-nginx-module
 
 # 编译安装 luajit
 cd luajit-2.1
@@ -142,7 +140,7 @@ cd /usr/src/nginx
 --with-http_spdy_module --with-http_realip_module \
 --with-http_flv_module --with-http_mp4_module \
 --with-openssl=../openssl --with-http_ssl_module \
---with-pcre=../pcre-8.42 --with-pcre-jit \
+--with-pcre=../pcre-8.43 --with-pcre-jit \
 --with-zlib=../zlib --with-http_gzip_static_module \
 --add-module=../ngx_brotli \
 --with-ld-opt=-ljemalloc ${waf_mod_1} ${waf_mod_2} 
@@ -276,6 +274,7 @@ find /wwwroot/ -type d -exec chmod 755 {} \;
 find /wwwroot/ -type f -exec chmod 644 {} \;
 
 # 开启 nginx 服务进程
+systemctl unmask nginx.service
 systemctl daemon-reload
 systemctl enable nginx
 systemctl start nginx
