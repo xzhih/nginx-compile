@@ -9,12 +9,16 @@ EOF
 
 read -p "install waf ? (Y/n): " input
 case $input in
-  n) waf=0 
+  n) 
+waf=0 
 waf_mod_1=''
-waf_mod_2='' ;;
-*) waf=1 
+waf_mod_2='' 
+;;
+*) 
+waf=1 
 waf_mod_1='--add-module=../lua-nginx-module'
-waf_mod_2='--add-module=../ngx_devel_kit' ;;
+waf_mod_2='--add-module=../ngx_devel_kit' 
+;;
 esac 
 
 # 安装依赖
@@ -89,7 +93,7 @@ make && make install
 echo '/usr/local/lib' >> /etc/ld.so.conf.d/local.conf
 ldconfig
 
-if [[ $waf == 1 ]]; then
+if [ $waf -eq 1 ]; then
 
 # 下载 ngx_lua_waf 防火墙的各种依赖及模块
 cd /usr/src/
