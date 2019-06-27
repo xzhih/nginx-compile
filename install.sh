@@ -46,9 +46,9 @@ mv openssl-OpenSSL_1_1_1 openssl
 
 # 下载 nginx
 cd /usr/src/
-wget https://nginx.org/download/nginx-1.15.9.tar.gz
-tar zxvf ./nginx-1.15.9.tar.gz 
-mv nginx-1.15.9 nginx
+wget https://nginx.org/download/nginx-1.17.0.tar.gz
+tar zxvf ./nginx-1.17.0.tar.gz 
+mv nginx-1.17.0 nginx
 
 # 下载 zlib
 # 开启 gzip 压缩
@@ -85,9 +85,9 @@ patch -p1 < ../nginx-patch/nginx.patch
 # 下载安装 jemalloc
 # 更好的内存管理
 cd /usr/src/
-wget https://github.com/jemalloc/jemalloc/releases/download/5.1.0/jemalloc-5.1.0.tar.bz2
-tar xjvf jemalloc-5.1.0.tar.bz2
-cd jemalloc-5.1.0
+wget https://github.com/jemalloc/jemalloc/releases/download/5.2.0/jemalloc-5.2.0.tar.bz2
+tar xjvf jemalloc-5.2.0.tar.bz2
+cd jemalloc-5.2.0
 ./configure
 make && make install
 echo '/usr/local/lib' >> /etc/ld.so.conf.d/local.conf
@@ -97,9 +97,9 @@ if [ $waf -eq 1 ]; then
 
 # 下载 ngx_lua_waf 防火墙的各种依赖及模块
 cd /usr/src/
-wget https://github.com/openresty/luajit2/archive/v2.1-20190302.tar.gz
-tar xzvf v2.1-20190302.tar.gz
-mv luajit2-2.1-20190302 luajit-2.1
+wget https://github.com/openresty/luajit2/archive/v2.1-20190530.tar.gz
+tar xzvf v2.1-20190530.tar.gz
+mv luajit2-2.1-20190530 luajit-2.1
 
 wget https://github.com/openresty/lua-cjson/archive/2.1.0.7.tar.gz
 tar xzvf 2.1.0.7.tar.gz
@@ -109,9 +109,9 @@ wget https://github.com/simplresty/ngx_devel_kit/archive/v0.3.1rc1.tar.gz
 tar xzvf v0.3.1rc1.tar.gz
 mv ngx_devel_kit-0.3.1rc1 ngx_devel_kit
 
-wget https://github.com/openresty/lua-nginx-module/archive/v0.10.14.tar.gz
-tar xzvf v0.10.14.tar.gz  
-mv lua-nginx-module-0.10.14 lua-nginx-module
+wget https://github.com/openresty/lua-nginx-module/archive/v0.10.15.tar.gz
+tar xzvf v0.10.15.tar.gz  
+mv lua-nginx-module-0.10.15 lua-nginx-module
 
 # 编译安装 luajit
 cd luajit-2.1
@@ -159,6 +159,7 @@ git clone https://github.com/xzhih/ngx_lua_waf.git waf
 mkdir -p /usr/local/nginx/logs/waf 
 chown www-data:www-data /usr/local/nginx/logs/waf 
 cat > /usr/local/nginx/conf/waf.conf << EOF
+lua_load_resty_core off;
 lua_shared_dict limit 20m;
 lua_package_path "/usr/local/nginx/conf/waf/?.lua";
 init_by_lua_file "/usr/local/nginx/conf/waf/init.lua";
@@ -167,7 +168,7 @@ EOF
 
 # 创建 nginx 全局配置
 cat > "/usr/local/nginx/conf/nginx.conf" << OOO
-user www-data;
+user www-data www-data;
 pid /var/run/nginx.pid;
 worker_processes auto;
 worker_rlimit_nofile 65535;
@@ -243,10 +244,9 @@ cat > /etc/logrotate.d/nginx << EOF
   daily
   missingok
   rotate 52
-  compress
   delaycompress
   notifempty
-  create 640 nginx adm
+  create 640 www-data www-data
   sharedscripts
   postrotate
   if [ -f /var/run/nginx.pid ]; then
