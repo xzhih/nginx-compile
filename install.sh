@@ -46,9 +46,10 @@ mv openssl-OpenSSL_1_1_1 openssl
 
 # 下载 nginx
 cd /usr/src/
-wget https://nginx.org/download/nginx-1.17.0.tar.gz
-tar zxvf ./nginx-1.17.0.tar.gz 
-mv nginx-1.17.0 nginx
+nginx_v='1.17.3'
+wget https://nginx.org/download/nginx-${nginx_v}.tar.gz
+tar zxvf ./nginx-${nginx_v}.tar.gz 
+mv nginx-${nginx_v} nginx
 
 # 下载 zlib
 # 开启 gzip 压缩
@@ -75,19 +76,17 @@ git clone https://github.com/hakasenyang/openssl-patch.git
 cd /usr/src/openssl 
 patch -p1 < ../openssl-patch/openssl-equal-1.1.1a_ciphers.patch
 
-# 下载 nginx-patch
-# 给 nginx 打补丁，修复一些问题
 cd /usr/src/
 git clone https://github.com/kn007/patch.git nginx-patch
 cd /usr/src/nginx
-patch -p1 < ../nginx-patch/nginx.patch 
+patch -p1 < ../nginx-patch/nginx.patch
 
 # 下载安装 jemalloc
 # 更好的内存管理
 cd /usr/src/
-wget https://github.com/jemalloc/jemalloc/releases/download/5.2.0/jemalloc-5.2.0.tar.bz2
-tar xjvf jemalloc-5.2.0.tar.bz2
-cd jemalloc-5.2.0
+wget https://github.com/jemalloc/jemalloc/releases/download/5.2.1/jemalloc-5.2.1.tar.bz2
+tar xjvf jemalloc-5.2.1.tar.bz2
+cd jemalloc-5.2.1
 ./configure
 make && make install
 echo '/usr/local/lib' >> /etc/ld.so.conf.d/local.conf
@@ -97,9 +96,10 @@ if [ $waf -eq 1 ]; then
 
 # 下载 ngx_lua_waf 防火墙的各种依赖及模块
 cd /usr/src/
-wget https://github.com/openresty/luajit2/archive/v2.1-20190530.tar.gz
-tar xzvf v2.1-20190530.tar.gz
-mv luajit2-2.1-20190530 luajit-2.1
+luajit_v='2.1-20190626'
+wget https://github.com/openresty/luajit2/archive/v${luajit_v}.tar.gz
+tar xzvf v${luajit_v}.tar.gz
+mv luajit2-${luajit_v} luajit
 
 wget https://github.com/openresty/lua-cjson/archive/2.1.0.7.tar.gz
 tar xzvf 2.1.0.7.tar.gz
@@ -114,7 +114,7 @@ tar xzvf v0.10.15.tar.gz
 mv lua-nginx-module-0.10.15 lua-nginx-module
 
 # 编译安装 luajit
-cd luajit-2.1
+cd luajit
 make -j2 && make install
 # echo '/usr/local/lib' >> /etc/ld.so.conf.d/local.conf
 ldconfig
@@ -155,6 +155,7 @@ make -j2 && make install
 
 # 下载配置 ngx_lua_waf
 cd /usr/local/nginx/conf/
+rm -rf /usr/local/nginx/conf/waf
 git clone https://github.com/xzhih/ngx_lua_waf.git waf 
 mkdir -p /usr/local/nginx/logs/waf 
 chown www-data:www-data /usr/local/nginx/logs/waf 
